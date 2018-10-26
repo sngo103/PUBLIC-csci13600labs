@@ -8,6 +8,7 @@ Assignment: Project 2 Phase 1 & 2
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <string>
 
 using std::string;
 using std::cout;
@@ -134,6 +135,401 @@ string identicalWords(string word, string pronunciation){
   return retStr;
 }
 
+string replace_phoneme(string word, string pronunciation){
+  if(pronunciation == "Not found"){
+    return "Not found";
+  }
+
+  string retStr = "";
+  // Open the file for reading
+  ifstream fin("cmudict.0.7a");
+  if (fin.fail()){
+    cerr << "rpFile cannot be opened for reading." << endl;
+    exit(1); // Exit if file cannot be opened.
+  }
+
+  string p = pronunciation.substr(1);
+  // cout << "Pronunciation:" << p << endl;
+  // Initialize variables for manipulating each line
+  string line;
+  string before;
+  string after;
+
+  // Get rid of header:
+  int counter = 0;
+  while(counter < 54){
+    getline(fin, line);
+    counter += 1;
+  }
+
+  string obj;
+  string term;
+  bool firstStrike;
+  bool secondStrike;
+  string before_new;
+  string after_new;
+  string before_p;
+  string after_p;
+
+  // For each line:
+  while(getline(fin, obj)){
+    p = pronunciation.substr(1);
+    firstStrike = false;
+    secondStrike = false;
+    // Remove the word:
+    splitOnSpace(obj, before_new, after_new);
+    term = before_new;
+    // cout << "Term: " << term << endl;
+
+    after_new = after_new.substr(1);
+    obj = after_new;
+    // cout << "+++++=============================" << endl;
+    // cout << "1Obj:" << obj << endl;
+    // cout << "1Before_new:" << before_new << endl;
+    // cout << "1After_new:" << after_new << endl;
+
+    while(!firstStrike || !secondStrike){
+      splitOnSpace(obj, before_new, after_new);
+      // cout << "2After new:" << after_new << "|" << endl;
+      obj = after_new;
+      splitOnSpace(p, before_p, after_p);
+      // cout << "2After p:" << after_p << "|" << endl;
+      p = after_p;
+      // cout << "2Before new:" << before_new << "|" << endl;
+      // cout << "2Before p:" << before_p << "|" << endl;
+
+      if(before_new == "" && before_p == ""){
+        if(firstStrike && !secondStrike){
+          // cout << "Word matches:" << term << endl;
+          retStr += term;
+          retStr += " ";
+          firstStrike = true;
+          secondStrike = true;
+        } else {
+          //cout << "-----------" << match << doubleMatch << endl;
+          firstStrike = true;
+          secondStrike = true;
+        }
+        // cout << "A" << endl;
+     } else if(before_p == "" || before_new == ""){
+       // cout << "END" << endl;
+       firstStrike = true;
+       secondStrike = true;
+       // cout << "B" << endl;
+
+     } else if(before_new == before_p){
+        // cout << "It matches" << endl;
+        // cout << "C" << endl;
+
+      } else if(firstStrike == true){
+        secondStrike = true;
+        // cout << "D Completely doesn't match." << endl;
+      } else {
+        // cout << "D" << endl;
+        // cout << "No match" << endl;
+        firstStrike = true;
+      }
+    }
+    // cout << "+++++=============================" << endl;
+  }
+
+  // Close file after reading
+  fin.close();
+
+  // cout << "RETSTR: " << retStr << endl;
+  return retStr;
+}
+
+string add_phoneme(string word, string pronunciation){
+  if(pronunciation == "Not found"){
+    return "Not found";
+  }
+
+  string retStr = "";
+  // Open the file for reading
+  ifstream fin("cmudict.0.7a");
+  if (fin.fail()){
+    cerr << "apFile cannot be opened for reading." << endl;
+    exit(1); // Exit if file cannot be opened.
+  }
+
+  string p = pronunciation.substr(1);
+  string line;
+  string before;
+  string after;
+
+  // Get rid of header:
+  int counter = 0;
+  while(counter < 54){
+    getline(fin, line);
+    counter += 1;
+  }
+
+  string obj;
+  string term;
+  bool firstStrike;
+  bool secondStrike;
+  string before_new;
+  string after_new;
+  string before_p;
+  string after_p;
+
+  int z = 0;
+  int pspace = 0;
+  int nspace = 0;
+  bool addSpace;
+
+  // For each line:
+  while(getline(fin, obj)){
+    addSpace = false;
+    p = pronunciation.substr(1);
+    firstStrike = false;
+    secondStrike = false;
+    // Remove the word:
+    splitOnSpace(obj, before_new, after_new);
+    term = before_new;
+    //cout << "Term: " << term << endl;
+
+    after_new = after_new.substr(1);
+    obj = after_new;
+
+    pspace = 0;
+    nspace = 0;
+    //cout << "P:" << p << "|" << endl;
+    //cout << "N:" << obj << "|" << endl;
+    for (int c = 0; c < p.length(); c++){
+      if(p.substr(c, 1) == " "){
+        pspace += 1;
+      }
+    }
+    //cout << "PSPACE: " << pspace << endl;
+
+    for (int c = 0; c < obj.length(); c++){
+      if(obj.substr(c, 1) == " "){
+        nspace += 1;
+      }
+    }
+    //cout << "NSPACE: " << nspace << endl;
+
+    if( nspace == pspace + 1){
+      while(!firstStrike || !secondStrike){
+        //cout << "P:" << p << "|" << endl;
+        //cout << "O:" << obj << "|" << endl;
+
+        splitOnSpace(obj, before_new, after_new);
+        obj = after_new;
+
+        if(obj == p && !addSpace){
+          p = "X " + p;
+          addSpace = true;
+        }
+
+        splitOnSpace(p, before_p, after_p);
+        p = after_p;
+
+        //cout << "p:" << before_p << "|" << "" << after_p << "|" << endl;
+        //cout << "n:" << before_new << "|" << "" << after_new << "|" << endl;
+        // To move to next line: firstStrike and secondStrike must equal true
+        if(((before_new == "" && before_p == "") && firstStrike) && !secondStrike){
+          retStr += term;
+          retStr += " ";
+          firstStrike = true;
+          secondStrike = true;
+          //cout << "A" << endl;
+        } else if((before_p == "" && secondStrike) || (before_p == "" && before_new == "")){
+          firstStrike = true;
+          secondStrike = true;
+          //cout << "B" << endl;
+        } else if(before_new != before_p){
+          if(firstStrike){
+            //cout << "C" << endl;
+            secondStrike = true;
+          } else {
+            //cout << "D" << endl;
+            firstStrike = true;
+          }
+          // else, do nothing and move onto the next phoneme
+        }
+      }
+    }
+    z += 1;
+    //cout << "+++++=============================" << endl;
+  }
+
+  // Close file after reading
+  fin.close();
+
+  //cout << "RETSTR: " << retStr << endl;
+  return retStr;
+}
+
+string remove_phoneme(string word, string pronunciation){
+  if(pronunciation == "Not found"){
+    return "Not found";
+  }
+
+  string retStr = "";
+  // Open the file for reading
+  ifstream fin("cmudict.0.7a");
+  if (fin.fail()){
+    cerr << "rmpFile cannot be opened for reading." << endl;
+    exit(1); // Exit if file cannot be opened.
+  }
+
+  string p = pronunciation.substr(1);
+  string line;
+  string before;
+  string after;
+
+  // Get rid of header:
+  int counter = 0;
+  while(counter < 54){
+    getline(fin, line);
+    counter += 1;
+  }
+
+  string obj;
+  string term;
+  bool firstStrike;
+  bool secondStrike;
+  string before_new;
+  string after_new;
+  string before_p;
+  string after_p;
+
+  int z = 0;
+  int pspace = 0;
+  int nspace = 0;
+  bool addSpace;
+
+  // For each line:
+  while(getline(fin, obj)){
+    addSpace = false;
+    p = pronunciation.substr(1);
+    firstStrike = false;
+    secondStrike = false;
+    // Remove the word:
+    splitOnSpace(obj, before_new, after_new);
+    term = before_new;
+    //cout << "Term: " << term << endl;
+
+    after_new = after_new.substr(1);
+    obj = after_new;
+
+    pspace = 0;
+    nspace = 0;
+    //cout << "P:" << p << "|" << endl;
+    //cout << "N:" << obj << "|" << endl;
+    for (int c = 0; c < p.length(); c++){
+      if(p.substr(c, 1) == " "){
+        pspace += 1;
+      }
+    }
+    //cout << "PSPACE: " << pspace << endl;
+
+    for (int c = 0; c < obj.length(); c++){
+      if(obj.substr(c, 1) == " "){
+        nspace += 1;
+      }
+    }
+    //cout << "NSPACE: " << nspace << endl;
+
+    if( nspace == pspace - 1){
+      while(!firstStrike && !secondStrike){
+        //cout << "P:" << p << "|" << endl;
+        //cout << "O:" << obj << "|" << endl;
+
+        splitOnSpace(obj, before_new, after_new);
+        obj = after_new;
+
+        if(obj == p && !addSpace){
+          p = "X " + p;
+          addSpace = true;
+        }
+
+        splitOnSpace(p, before_p, after_p);
+        p = after_p;
+
+        //cout << "p:" << before_p << "|" << "" << after_p << "|" << endl;
+        //cout << "n:" << before_new << "|" << "" << after_new << "|" << endl;
+        // To move to next line: firstStrike and secondStrike must equal true
+        if(((before_new == "" && before_p == "") && firstStrike) && !secondStrike){
+          retStr += term;
+          retStr += " ";
+          firstStrike = true;
+          secondStrike = true;
+          //cout << "A" << endl;
+        } else if((before_p == "" && secondStrike) || (before_p == "" && before_new == "")){
+          firstStrike = true;
+          secondStrike = true;
+          //cout << "B" << endl;
+        } else if(before_new != before_p){
+          if(firstStrike){
+            //cout << "C" << endl;
+            secondStrike = true;
+          } else {
+            //cout << "D" << endl;
+            firstStrike = true;
+          }
+          // else, do nothing and move onto the next phoneme
+        }
+      }
+    }
+    z += 1;
+    //cout << "+++++=============================" << endl;
+  }
+
+  // Close file after reading
+  fin.close();
+
+  //cout << "RETSTR: " << retStr << endl;
+  return retStr;
+}
+
+string rPhoneme(string word, string pronunciation){
+  if(pronunciation == "Not found"){
+    return "Not found";
+  }
+
+  string retStr = "";
+  // Open the file for reading
+  ifstream fin("cmudict.0.7a");
+  if (fin.fail()){
+    cerr << "rmpFile cannot be opened for reading." << endl;
+    exit(1); // Exit if file cannot be opened.
+  }
+
+  // Initialize variables for manipulating each line
+  string line;
+  string before;
+  string after;
+
+
+  // Get rid of header:
+  int counter = 0;
+  while(counter < 54){
+    getline(fin, line);
+    counter += 1;
+  }
+
+  // Read the values line by line
+  while(getline(fin, line)){
+    // cout << line << endl;
+    splitOnSpace(line, before, after);
+    if(after == pronunciation && before != word){
+      // cout << "After: " << after << endl;
+      retStr += before;
+      retStr += " ";
+      // cout << retStr;
+    }
+  }
+
+  // Close file after reading
+  fin.close();
+
+  return retStr;
+}
+
 int wordSearch(){
   // Get word from user:
   string word;
@@ -160,21 +556,28 @@ int wordSearch(){
   }
 
   // Handling identical words:
-  x = identicalWords(word, x); // Passing the pronunciation, getting back the identical words
-  identical += x;
+  string p = identicalWords(word, x); // Passing the pronunciation, getting back the identical words
+  identical += p;
   identical += "\n";
 
   // Handling adding a phoneme:
-  // ---To be coded
+  p = add_phoneme(word, x);
+  addPhoneme += p;
+  addPhoneme += "\n";
   // Handling removing a phoneme:
-  // ---To be coded
+  removePhoneme += "\n";
   // Handlind replacing a phoneme:
-  // ---To be coded
+  p = replace_phoneme(word, x);
+  replacePhoneme += p;
+  replacePhoneme += "\n";
 
   output += pronunciation;
   output += "\n";
   output += identical;
-  cout << output << endl;
+  output += addPhoneme;
+  output += removePhoneme;
+  output += replacePhoneme;
+  cout << output << endl << endl;
   return 0;
 }
 
