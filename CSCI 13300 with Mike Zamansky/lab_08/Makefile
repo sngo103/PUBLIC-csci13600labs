@@ -10,4 +10,4 @@ lab-images.o: lab-images.cpp lab-images.h
 		g++ $(CXXFLAGS) -c lab-images.cpp
 
 clean:
-		rm -f main.o lab-images.o main outImage.pgm invert.pgm inverthalf.pgm box.pgm frame.pgm scale.pgm
+		rm -f main.o lab-images.o main outImage.pgm invert.pgm inverthalf.pgm box.pgm frame.pgm scale.pgm pixel.pgm

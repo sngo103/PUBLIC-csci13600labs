@@ -4,4 +4,4 @@
 ##### This lab is a modified version of CSCI 136's lab_08, but practices implementing and using Makefile and writing helper functions.
 
 Notes:
-- N/A
+- The main function creates the required images, but you have to view them on your own using the 'eog' command or other.

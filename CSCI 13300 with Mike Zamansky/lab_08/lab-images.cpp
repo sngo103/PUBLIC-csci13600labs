@@ -123,23 +123,14 @@ void frame(int image[MAX_H][MAX_W], int height, int width){
 }
 
 void scale(int image[MAX_H][MAX_W], int height, int width){
-	/*
-	int newH = height * 2;
-	int newW = width * 2;
-	cout << "NEW H " << newH << endl;
-	cout << "NEW W " << newW << endl;
-	cout << "H " << height << endl;
-	cout << "W " << width << endl;
-	int biggerImage[newH][newW];
+	const int newH = height * 2;
+	const int newW = width * 2;
+	int biggerImage[MAX_H][MAX_W];
 	int bigRow = 0;
 	int bigColumn = 0;
 	int currentNum;
-	bool secondRowNow = false; // False before the first row, true before the second row
 	for(int row = 0; row < height; row++){
-		cout << "Working on Row " << row << endl;
 		for(int col = 0; col < width; col++){
-			cout << "----------Working on Col " << col << endl;
-			cout << "-----------------------Big Row " << bigRow << endl;
 			currentNum = image[row][col];
 			biggerImage[bigRow][bigColumn] = currentNum;
 			biggerImage[bigRow][bigColumn + 1] = currentNum;
@@ -148,8 +139,6 @@ void scale(int image[MAX_H][MAX_W], int height, int width){
 		bigRow += 1;
 		bigColumn = 0;
 		for(int col = 0; col < width; col++){
-			cout << "----------Working on Col " << col << endl;
-			cout << "-----------------------Big Row " << bigRow << endl;
 			currentNum = image[row][col];
 			biggerImage[bigRow][bigColumn] = currentNum;
 			biggerImage[bigRow][bigColumn + 1] = currentNum;
@@ -159,5 +148,21 @@ void scale(int image[MAX_H][MAX_W], int height, int width){
 		bigColumn = 0;
 	}
 	writeImage("scale.pgm", biggerImage, newH, newW);
-	*/
+}
+
+void pixelate(int image[MAX_H][MAX_W], int height, int width){
+	int newArray[MAX_H][MAX_W];
+	int average = 0;
+	for(int row = 0; row < height; row += 2){
+		for(int col = 0; col < width; col += 2){
+			average = image[row][col] + image[row][col + 1];
+			average += image[row + 1][col] + image[row + 1][col + 1];
+			average = average/4;
+			newArray[row][col] = average;
+			newArray[row][col + 1] = average;
+			newArray[row + 1][col] = average;
+			newArray[row + 1][col + 1] = average;
+		}
+	}
+	writeImage("pixel.pgm", newArray, height, width);
 }

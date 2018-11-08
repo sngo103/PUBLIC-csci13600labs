@@ -19,7 +19,10 @@ int main(){
   cout << "====================================================================================================" << endl;
   cout << "Lab 8: Writing Image Manipulation Functions" << endl;
   cout << "====================================================================================================" << endl;
-	int img[MAX_H][MAX_W];
+  cout << "- Compile and run main executable to create resulting image files." << endl;
+	cout << "- Use 'eog' command or other to view. " << endl;
+
+  int img[MAX_H][MAX_W];
 	int h, w;
 
 	readImage(img, h, w); // read it from the file "inImage.pgm"
@@ -67,8 +70,14 @@ int main(){
       out[row][col] = img[row][col];
     }
   }
-  writeImage("scale.pgm",out, h * 2, w * 2);
   scale(out, h, w);
+
+  for(int row = 0; row < h; row++) {
+    for(int col = 0; col < w; col++) {
+      out[row][col] = img[row][col];
+    }
+  }
+  pixelate(out, h, w);
 
   return 0;
 
