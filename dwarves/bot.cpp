@@ -99,38 +99,54 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
     dwarf.start_chop(NORTH);
     return;
   } else {
+    //ROW + 3
 
-    if((c == COLS - 1) && r != ROWS - 2){
-	if(dwarf.look(r+2, 1) == EMPTY){
-	  dwarf.start_walk(r+2, 1);
+    if(c == COLS - 1 && r != ROWS - 3){
+	if(dwarf.look(r+3, c-1) == EMPTY){
+	  dwarf.start_walk(r+3, c-1);
 	} else {
-	  rr = rand() % ROWS;
-	  cc = rand() % COLS;
+	  rr = r - rand() % 4;
+	  cc = c - rand() % 4;
 	  while(dwarf.look(rr,cc) != EMPTY){
-	    rr = rand() % ROWS;
-	    cc = rand() % COLS;
+	    rr = r - rand() % 4;
+	    cc = c - rand() % 4;
 	  }
 	  dwarf.start_walk(rr, cc);
 	  log << "Walk RANDOMLY to " << rr << " " << cc << endl;
 	}
-    } else if((c == COLS - 1 || c == 0) && r == ROWS - 2){
-      rr = rand() % ROWS;
-      cc = rand() % COLS;
-      while(dwarf.look(rr,cc) != EMPTY){
-	rr = rand() % ROWS;
-	cc = rand() % COLS;
+    } else if(c == 0 && r == ROWS - 3){
+      if(dwarf.look(r+3, 1) == EMPTY){
+	dwarf.start_walk(r+3, 1);
+      } else {
+	rr = r - rand() % 4;
+	cc = c - rand() % 4;
+	while(dwarf.look(rr,cc) != EMPTY){
+	  rr = r - rand() % 4;
+	  cc = c - rand() % 4;
+	}
       }
       dwarf.start_walk(rr, cc);
       log << "Walk to " << rr << " " << cc << endl;
     } else {
-      if(dwarf.look(r, c+1) == EMPTY){
+      if(r % 2 == 0 && dwarf.look(r, c+1) == EMPTY){
 	dwarf.start_walk(r, c+1);
-      } else {
-	rr = rand() % ROWS;
-	cc = rand() % COLS;
+      } else if(r % 2 != 0 && dwarf.look(r, c-1) == EMPTY){
+	dwarf.start_walk(r, c-1);
+      } else if (r == 0) {
+	rr = r + rand() % 4;
+	cc = c + rand() % 4;
 	while(dwarf.look(rr,cc) != EMPTY){
-	  rr = rand() % ROWS;
-	  cc = rand() % COLS;
+	  rr = r + rand() % 4;
+	  cc = c + rand() % 4;
+	}
+	dwarf.start_walk(rr, cc);
+	log << "Walk RANDOMLY to " << rr << " " << cc << endl;
+      } else {
+	rr = r - rand() % 4;
+	cc = c - rand() % 4;
+	while(dwarf.look(rr,cc) != EMPTY){
+	  rr = r - rand() % 4;
+	  cc = c - rand() % 4;
 	}
 	dwarf.start_walk(rr, cc);
 	log << "Walk RANDOMLY to " << rr << " " << cc << endl;
