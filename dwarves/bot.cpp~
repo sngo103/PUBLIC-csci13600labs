@@ -1,0 +1,150 @@
+/*
+Author: Samantha Ngo
+Course: CSCI-135
+Instructor: Genady Maryash
+Date: 2018 November 20
+Assignment: Project 3A
+Task: Improve the function onAction so that a dwarf collects at least 100 pieces of lumber per day.
+*/
+
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include "bot.h"
+
+using namespace std;
+
+const int MAX_ROWS = 40;
+const int MAX_COLS = 40;
+const int MAX_NUM = 10;
+
+int ROWS;  // global variables
+int COLS;
+int NUM;
+
+/* onStart: 
+An Initialization procedure called at the start of the game.
+You can use it to initialize certain global variables, or do 
+something else before the actual simulation starts.
+Parameters:
+    rows: number of rows
+    cols: number of columns
+    num:  number of dwarfs
+    log:  a cout-like log */
+
+void onStart(int rows, int cols, int num, std::ostream &log) {
+  log << "Start!" << endl; // Print a greeting message
+
+  ROWS = rows; // Save values in global variables
+  COLS = cols;
+  NUM = num;
+}
+
+/* onAction: 
+A procedure called each time an idle dwarf is choosing 
+their next action.
+Parameters:
+    dwarf:   dwarf choosing an action
+    day:     day (1+)
+    hours:   number of hours in 24-hour format (0-23)
+    minutes: number of minutes (0-59)
+    log:     a cout-like log  */
+
+/*
+void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
+  // Get current position of the dwarf
+  int r = dwarf.row();
+  int c = dwarf.col();
+
+  // Look if there is a tree on the right from the dwarf
+  if (dwarf.look(r, c+1) == PINE_TREE) {
+    // If there is a pine tree, chop it
+    log << "Found a tree -- chop" << endl;
+    dwarf.start_chop(EAST);
+    return;
+  }
+  else {
+    // Otherwise, move to a random location
+    int rr = rand() % ROWS;
+    int cc = rand() % COLS;
+    log << "Walk to " << rr << " " << cc << endl;
+    dwarf.start_walk(rr, cc);
+    return;
+  }
+}
+*/
+
+void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
+  // Get current position of the dwarf
+  int r = dwarf.row();
+  int c = dwarf.col();
+
+  if (dwarf.look(r, c+1) == PINE_TREE || dwarf.look(r, c+1) == FENCE){
+    // If there is a pine tree or fence, chop it
+    log << "Found lumber on my east -- chop" << endl;
+    dwarf.start_chop(EAST);
+    return;
+  }/* else if (dwarf.look(r, c+1) == APPLE_TREE || dwarf.look(r, c+1) == PUMPKIN){
+    // If there is a pumpkin or apple tree, pick it
+    log << "Found food on my east -- chop" << endl;
+    dwarf.start_pick(EAST);
+    return;
+    } */else if (dwarf.look(r, c-1) == PINE_TREE || dwarf.look(r, c-1) == FENCE){
+    log << "Found lumber on my west -- chop" << endl;
+    dwarf.start_chop(WEST);
+    return;
+  } /*else if (dwarf.look(r, c-1) == APPLE_TREE || dwarf.look(r, c-1) == PUMPKIN){
+    log << "Found food on my west -- chop" << endl;
+    dwarf.start_pick(WEST);
+    return;
+    } */else if (dwarf.look(r+1, c) == PINE_TREE || dwarf.look(r+1, c) == FENCE){
+    log << "Found lumber on my south -- chop" << endl;
+    dwarf.start_chop(SOUTH);
+    return;
+  } /*else if (dwarf.look(r+1, c) == APPLE_TREE || dwarf.look(r+1, c) == PUMPKIN){
+    log << "Found food on my south -- chop" << endl;
+    dwarf.start_pick(SOUTH);
+    return;
+    } */else if (dwarf.look(r-1, c) == PINE_TREE || dwarf.look(r-1, c) == FENCE){
+    log << "Found lumber on my north -- chop" << endl;
+    dwarf.start_chop(NORTH);
+    return;
+  } /*else if (dwarf.look(r-1, c+1) == APPLE_TREE || dwarf.look(r-1, c) == PUMPKIN){
+    log << "Found food on my north -- chop" << endl;
+    dwarf.start_pick(NORTH);
+    return;
+    } */else {
+   
+    if(c != COLS - 1){
+      if(r % 2 == 0 && dwarf.look(r, c+1) == EMPTY){
+	dwarf.start_walk(r, c+1);
+      } else if(dwarf.look(r, c-1) == EMPTY){
+	dwarf.start_walk(r, c-1);
+      } else {
+	int rr = rand() % ROWS;
+	int cc = rand() % COLS;
+	while(dwarf.look(rr,cc) != EMPTY){
+	  rr = rand() % ROWS;
+	  cc = rand() % COLS;
+	}
+	dwarf.start_walk(rr, cc);
+	log << "Walk to " << rr << " " << cc << endl;
+      }
+    } else if(r != ROWS - 1 && dwarf.look(r+1, c) == EMPTY){
+      dwarf.start_walk(r+1, c);
+    } else {
+      // Otherwise, move to a random location
+      int rr = rand() % ROWS;
+      int cc = rand() % COLS;
+      while(dwarf.look(rr,cc) != EMPTY){
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+      }
+      dwarf.start_walk(rr, cc);
+      log << "Walk to " << rr << " " << cc << endl;
+    } 
+    return;
+  }
+}
+
+
