@@ -78,8 +78,8 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
   // Get current position of the dwarf
   int r = dwarf.row();
   int c = dwarf.col();
-  int rr;
-  int cc;
+  int rr = 0;
+  int cc = 0;
 
   if (dwarf.look(r, c+1) == PINE_TREE || dwarf.look(r, c+1) == FENCE){
     // If there is a pine tree or fence, chop it
@@ -99,11 +99,111 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
     dwarf.start_chop(NORTH);
     return;
   } else {
+
+    if((c == COLS - 1) && r != ROWS - 2){
+	if(dwarf.look(r+2, 1) == EMPTY){
+	  dwarf.start_walk(r+2, 1);
+	} else {
+	  rr = rand() % ROWS;
+	  cc = rand() % COLS;
+	  while(dwarf.look(rr,cc) != EMPTY){
+	    rr = rand() % ROWS;
+	    cc = rand() % COLS;
+	  }
+	  dwarf.start_walk(rr, cc);
+	  log << "Walk RANDOMLY to " << rr << " " << cc << endl;
+	}
+    } else if((c == COLS - 1 || c == 0) && r == ROWS - 2){
+      rr = rand() % ROWS;
+      cc = rand() % COLS;
+      while(dwarf.look(rr,cc) != EMPTY){
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+      }
+      dwarf.start_walk(rr, cc);
+      log << "Walk to " << rr << " " << cc << endl;
+    } else {
+      if(dwarf.look(r, c+1) == EMPTY){
+	dwarf.start_walk(r, c+1);
+      } else {
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+	while(dwarf.look(rr,cc) != EMPTY){
+	  rr = rand() % ROWS;
+	  cc = rand() % COLS;
+	}
+	dwarf.start_walk(rr, cc);
+	log << "Walk RANDOMLY to " << rr << " " << cc << endl;
+      }
+    }
+  }
+    /*
+    if(c == COLS - 1 && r != ROWS - 1 && dwarf.look(r+1, c-1) == EMPTY){
+      dwarf.start_walk(r+1, c-1);
+      log << "Reached end of row" << endl;
+    } else if(c == 0 && r != ROWS - 1 && dwarf.look(r+1, c+1) == EMPTY){
+      dwarf.start_walk(r+1, c+1);
+      log << "Reached beginning of row" << endl;
+    } else if(c % 2 != 0 && r != ROWS - 1 && dwarf.look(r, c+1) == EMPTY){
+      dwarf.start_walk(r, c+1);
+      log << "Move right" << endl;
+    } else if(c % 2 == 0 && r != ROWS - 1 && dwarf.look(r, c-1) == EMPTY){
+      dwarf.start_walk(r, c-1);
+      log << "Move left" << endl;
+    } else {
+      rr = rand() % ROWS;
+      cc = rand() % COLS;
+      while(dwarf.look(rr,cc) != EMPTY){
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+      }
+      dwarf.start_walk(rr, cc);
+      log << "Walk RANDOMLY to " << rr << " " << cc << endl;
+    }
+  }
+
+    if((c == COLS - 2) && r != ROWS - 2){
+	if(dwarf.look(r+2, 1) == EMPTY){
+	  dwarf.start_walk(r+2, 1);
+	} else {
+	  rr = rand() % ROWS;
+	  cc = rand() % COLS;
+	  while(dwarf.look(rr,cc) != EMPTY){
+	    rr = rand() % ROWS;
+	    cc = rand() % COLS;
+	  }
+	  dwarf.start_walk(rr, cc);
+	  log << "Walk RANDOMLY to " << rr << " " << cc << endl;
+	}
+    } else if((c == COLS - 2 || c == 0) && r == ROWS - 2){
+      rr = rand() % ROWS;
+      cc = rand() % COLS;
+      while(dwarf.look(rr,cc) != EMPTY){
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+      }
+      dwarf.start_walk(rr, cc);
+      log << "Walk to " << rr << " " << cc << endl;
+    } else {
+      if(dwarf.look(r, c+2) == EMPTY){
+	dwarf.start_walk(r, c+2);
+      } else {
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+	while(dwarf.look(rr,cc) != EMPTY){
+	  rr = rand() % ROWS;
+	  cc = rand() % COLS;
+	}
+	dwarf.start_walk(rr, cc);
+	log << "Walk RANDOMLY to " << rr << " " << cc << endl;
+      }
+    }
+  }
     
-    if((c == COLS - 1 || c == 0) && r != ROWS - 1){
-      if(c == COLS - 1){
-	if(dwarf.look(r+1, c-1) == EMPTY){
-	  dwarf.start_walk(r+1, c-1);
+    if((c == COLS - 2 || c == 0) && r != ROWS - 2){
+      if(c == COLS - 2){
+	if(dwarf.look(r+2, c-1) == EMPTY){
+	  dwarf.start_walk(r+2, c-1);
 	} else {
 	  rr = rand() % ROWS;
 	  cc = rand() % COLS;
@@ -115,8 +215,8 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
 	  log << "Walk to " << rr << " " << cc << endl;
 	}
       } else {
-	if(dwarf.look(r+1, c+1) == EMPTY){
-	  dwarf.start_walk(r+1, c+1);
+	if(dwarf.look(r+2, c+1) == EMPTY){
+	  dwarf.start_walk(r+2, c+1);
 	} else {
 	  rr = rand() % ROWS;
 	  cc = rand() % COLS;
@@ -128,7 +228,7 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
 	  log << "Walk to " << rr << " " << cc << endl;
 	}
       }
-    } else if((c == COLS - 1 || c == 0) && r == ROWS - 1){
+    } else if((c == COLS - 2 || c == 0) && r == ROWS - 2){
       rr = rand() % ROWS;
       cc = rand() % COLS;
       while(dwarf.look(rr,cc) != EMPTY){
@@ -138,6 +238,19 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
       dwarf.start_walk(rr, cc);
       log << "Walk to " << rr << " " << cc << endl;
     } else {
+      if(dwarf.look(r, c+1) == EMPTY){
+	dwarf.start_walk(r, c+1);
+      } else {
+	rr = rand() % ROWS;
+	cc = rand() % COLS;
+	while(dwarf.look(rr,cc) != EMPTY){
+	  rr = rand() % ROWS;
+	  cc = rand() % COLS;
+	}
+	dwarf.start_walk(rr, cc);
+	log << "Walk to " << rr << " " << cc << endl;
+      }
+      
       if(r % 2 == 0){
 	if(dwarf.look(r, c+1) == EMPTY){
 	  dwarf.start_walk(r, c+1);
@@ -175,7 +288,7 @@ void onAction(Dwarf &dwarf, int day, int hours, int minutes, ostream &log) {
 	  log << "Walk to " << rr << " " << cc << endl;
       }
     }
-  } 
+      */
   return;
 }
 
